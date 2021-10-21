@@ -12,4 +12,4 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(name="/help"))
     print("Bot online and running...")
 
-client.run(os.get_dotenv(BOT_TOKEN))
+client.run(os.getenv("BOT_TOKEN"))
