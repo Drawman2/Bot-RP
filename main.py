@@ -13,3 +13,13 @@ async def on_ready():
     print("Bot online and running...")
 
 client.run(os.getenv("BOT_TOKEN"))
+
+@client.command()
+
+#The name of each function is the same as the command you want to have
+#in Discord.
+#ctx: read as "context". This is like an overview of the command. It
+#contains informations about it and allows to send things on Discord.
+async def ping(ctx):
+    #latency is multiplied by 1000 because it was originally in seconds.
+    await ctx.send("Pong! {}ms".format(round(client.lantency * 1000)))
