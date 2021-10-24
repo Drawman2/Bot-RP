@@ -9,21 +9,24 @@ import os
 #dotenv.load_dotenv()
 
 #Gives access to members events.
-#intents = discord.Intents.default()
-#intents.members=True
-#client = discord.Client(intents=intents)
+intents = discord.Intents().all()
 
-commandClient = commands.Bot(command_prefix = "/")
-commandClient.remove_command('help')
+client = commands.Bot(command_prefix="/", intents=intents)
+client.remove_command('help')
+
+async def displayWelcome(member):
+  channel = client.get_channel(901069733594546207)
+  message = member.mention + ", vous pouvez faire votre fiche de personnage ici."
+  await channel.send(message)
 
 #This is a decorator. It calls the following function within itself in
 #order to execute code before and after.
-@commandClient.event
+@client.event
 async def on_ready():
-    await commandClient.change_presence(activity=discord.Game(name="/help"))
+    await client.change_presence(activity=discord.Game(name="/help"))
     print("Bot online and running...")
 
-@commandClient.command()
+@client.command()
 
 #The name of each function is the same as the command you want to have
 #in Discord.
@@ -31,14 +34,18 @@ async def on_ready():
 #contains informations about it and allows to send things on Discord.
 async def ping(ctx):
   #latency is multiplied by 1000 because it was originally in seconds.
-  await ctx.send("Pong! {}ms".format(round(commandClient.latency * 1000)))
+  await ctx.send("Pong! {}ms".format(round(client.latency * 1000)))
 
-@commandClient.command()
+@client.command()
 @commands.has_role("Modérateur")
 async def clear(ctx, amount=10):
   await ctx.channel.purge(limit=amount+1)
 
-@commandClient.command()
+@client.command()
+async def welcome(ctx):
+  await displayWelcome(ctx.author)
+
+@client.command()
 async def help(ctx):
   embed = discord.Embed(
     title = "Aide",
@@ -51,13 +58,10 @@ async def help(ctx):
   await ctx.send(embed=embed)
 
 #Mentions the player when they join to create a character.
-#@client.event
-#async def on_member_join(member):
-#  channel = client.get_channel(901069733594546207)
-#  print(channel)
-#  
-#  await channel.send("Test")
+@client.event
+async def on_member_join(member):
+  await displayWelcome(member)
 
 keep_alive()
 #This needs to be at the end
-commandClient.run(os.getenv("BOT_TOKEN"))
+client.run(os.getenv("BOT_TOKEN"))
